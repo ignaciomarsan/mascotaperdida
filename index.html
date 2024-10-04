@@ -3,22 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Lost Pet</title>
+    <title>Encuentra tu Mascota Perdida</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Report a Lost Pet</h1>
-        <form id="pet-form">
-            <label for="photo">Upload a Photo of the Pet:</label>
-            <input type="file" id="photo" accept="image/*" required><br>
-            <div id="map" style="height: 500px; width: 100%;"></div><br>
-            <button type="submit">Submit</button>
-        </form>
+    <header>
+        <h1>Encuentra tu mascota perdida o ayuda a encontrar a otros</h1>
+    </header>
+
+    <div class="layout">
+        <!-- Barra de botones en el lado izquierdo -->
+        <div class="left-panel">
+            <button id="searchMyPet">Busco mi mascota</button>
+            <button id="reportLostPet">Reportar mascota perdida</button>
+            <button id="reportFoundPet">Reportar encontrado</button>
+        </div>
+
+        <!-- Mapa en el centro -->
+        <div id="map" class="map-container"></div>
+
+        <!-- Listado de mascotas perdidas a la derecha -->
+        <div class="right-panel">
+            <h2>Mascotas Extraviadas</h2>
+            <ul id="lostPetsList"></ul>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
+</html>
+
 </html>
