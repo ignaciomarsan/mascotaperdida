@@ -1,65 +1,59 @@
 let map;
-let marker;
+let lostPets = [];
+let markers = [];
 
-// Inicializa el mapa usando Leaflet y OpenStreetMap
 function initMap() {
-    map = L.map('map').setView([51.505, -0.09], 13); // Coordenadas por defecto (Londres)
+    map = L.map('map').setView([51.505, -0.09], 13);
 
-    // Capa de OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
+    
+    document.getElementById('reportLostPet').addEventListener('click', reportLostPet);
+    document.getElementById('searchMyPet').addEventListener('click', searchMyPet);
+}
 
-    // Obtener la geolocalización del usuario y centrar el mapa
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            const userLocation = [position.coords.latitude, position.coords.longitude];
-            map.setView(userLocation, 13);
-
-            // Añadir un marcador en la ubicación del usuario
-            L.marker(userLocation).addTo(map)
-                .bindPopup('You are here')
-                .openPopup();
-        });
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-
-    // Añadir un evento para colocar un marcador cuando el usuario haga clic en el mapa
-    map.on('click', function(e) {
-        placeMarker(e.latlng);
+function reportLostPet() {
+    // El usuario puede hacer clic en el mapa para reportar una mascota perdida
+    map.once('click', function(event) {
+        const location = event.latlng;
+        const photo = prompt('Sube la URL de la foto de la mascota:'); // Usa un input real si prefieres
+        if (photo) {
+            const marker = L.marker(location, {
+                icon: L.icon({
+                    iconUrl: 'paw-icon.png',
+                    iconSize: [40, 40]
+                })
+            }).addTo(map);
+            marker.bindPopup(`<img src="${photo}" width="100"><br>Reportado aquí.`).openPopup();
+            lostPets.push({ photo, location });
+            addToLostPetsList(photo);
+        }
     });
 }
 
-function placeMarker(location) {
-    if (marker) {
-        marker.setLatLng(location);  // Si ya existe un marcador, mueve su posición
-    } else {
-        marker = L.marker(location, {
+function searchMyPet() {
+    // El usuario puede hacer clic en el mapa para reportar la última ubicación de su mascota
+    map.once('click', function(event) {
+        const location = event.latlng;
+        const marker = L.marker(location, {
             icon: L.icon({
-                iconUrl: 'paw-icon.png', // Asegúrate de tener un ícono de pata de perro llamado "paw-icon.png"
-                iconSize: [40, 40]  // Tamaño del ícono
+                iconUrl: 'warning-icon.png',  // Un ícono de advertencia en rojo
+                iconSize: [40, 40]
             })
-        }).addTo(map).bindPopup("Pet sighting location").openPopup();
-    }
+        }).addTo(map);
+        marker.bindPopup('Última ubicación conocida.').openPopup();
+    });
 }
 
-document.getElementById('pet-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const photo = document.getElementById('photo').files[0];
+function addToLostPetsList(photo) {
+    const lostPetsList = document.getElementById('lostPetsList');
+    const listItem = document.createElement('li');
+    const img = document.createElement('img');
+    img.src = photo;
+    listItem.appendChild(img);
+    lostPetsList.appendChild(listItem);
+}
 
-    if (marker && photo) {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-            // Aquí podrías enviar la foto y la ubicación a un servidor para guardarlos
-            alert('Pet sighting reported with photo!');
-        };
-        reader.readAsDataURL(photo);
-    } else {
-        alert('Please upload a photo and select a location on the map');
-    }
-});
-
-// Inicializar el mapa al cargar la página
 initMap();
+
